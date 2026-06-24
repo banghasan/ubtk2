@@ -47,7 +47,7 @@ export function createApp(config: AppConfig) {
   if (process.env.NODE_ENV === 'production') {
     const distDir = '../frontend/dist';
     app.get('/assets/*', serveStatic({ root: distDir }));
-    app.get('/*', (c) => {
+    app.get('/*', () => {
       const file = Bun.file(`${distDir}/index.html`);
       return new Response(file, {
         headers: { 'Content-Type': 'text/html' },

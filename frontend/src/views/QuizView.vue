@@ -146,7 +146,6 @@ const autoStart = ref(false);
 const answeredIds = ref<Set<number>>(new Set());
 const sessionResults = ref<SessionResult[]>([]);
 const showExitModal = ref(false);
-let pendingExitRoute: string | null = null;
 
 const currentQuestionNumber = computed(() => {
   if (state.value === 'reviewing') return answeredIds.value.size;
@@ -303,7 +302,6 @@ function tryExit() {
 
 function cancelExit() {
   showExitModal.value = false;
-  pendingExitRoute = null;
 }
 
 function confirmExit() {

@@ -1,12 +1,26 @@
 {
   "name": "utbk-belajar",
   "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "eslint": "^9.30.1",
+    "eslint-plugin-vue": "^9.33.0",
+    "globals": "^15.15.0",
+    "prettier": "^3.6.2",
+    "typescript-eslint": "^8.35.1",
+    "vue-eslint-parser": "^9.4.3"
+  },
   "scripts": {
     "dev": "bun run --cwd backend dev & bun run --cwd frontend dev",
     "install:all": "bun install --cwd backend && bun install --cwd frontend",
     "test": "bun run --cwd backend test && bun run --cwd frontend test",
     "typecheck": "bun run --cwd backend typecheck && bun run --cwd frontend typecheck",
+    "lint": "eslint backend/src frontend/src --ext .ts,.vue",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "seed": "bun run --cwd backend seed",
+    "seed:check": "bun run --cwd backend seed:check",
     "db:migrate": "bun run --cwd backend db:migrate"
   }
 }

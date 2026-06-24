@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "bun src/lib/seed.ts",
+    "seed:check": "bun src/lib/seed-check.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun src/db/migrate.ts"
   },

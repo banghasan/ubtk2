@@ -1,0 +1,8 @@
+node_modules/
+dist/
+backend/dist/
+frontend/dist/
+backend/drizzle/
+backend/bun.lock
+frontend/bun.lock
+.playwright-mcp/

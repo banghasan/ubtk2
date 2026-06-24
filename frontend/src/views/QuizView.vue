@@ -77,7 +77,9 @@
         :correct_keys="result.correct_keys"
         :explanation="result.explanation"
         :elapsed_seconds="finalTime"
+        :is_last="answeredIds.size >= questionCount"
         @next="nextQuestion"
+        @finish="state = 'resume'"
       />
     </div>
 
@@ -264,6 +266,7 @@ function resetSession() {
 }
 
 function hasActiveSession(): boolean {
+  if (state.value === 'resume' || state.value === 'ready') return false;
   return state.value === 'answering' || state.value === 'reviewing' || answeredIds.value.size > 0;
 }
 

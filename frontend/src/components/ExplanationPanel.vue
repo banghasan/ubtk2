@@ -16,7 +16,10 @@
       <p>{{ explanation }}</p>
     </div>
 
-    <button class="explanation-next" @click="$emit('next')">
+    <button v-if="is_last" class="explanation-next" @click="$emit('finish')">
+      Lihat Hasil
+    </button>
+    <button v-else class="explanation-next" @click="$emit('next')">
       Soal Berikutnya
     </button>
   </div>
@@ -30,11 +33,12 @@ const props = defineProps<{
   correct_keys: string[];
   explanation: string;
   elapsed_seconds: number;
-  show_next?: boolean;
+  is_last?: boolean;
 }>();
 
 defineEmits<{
   (e: 'next'): void;
+  (e: 'finish'): void;
 }>();
 
 const isCorrect = computed(() => props.correct);

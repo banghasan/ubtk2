@@ -82,8 +82,27 @@ describe('ExplanationPanel', () => {
 
     const btn = wrapper.find('.explanation-next');
     expect(btn.exists()).toBe(true);
+    expect(btn.text()).toBe('Soal Berikutnya');
 
     await btn.trigger('click');
     expect(wrapper.emitted('next')).toHaveLength(1);
+  });
+
+  it('shows Lihat Hasil and emits finish when is_last', async () => {
+    const wrapper = mount(ExplanationPanel, {
+      props: {
+        correct: true,
+        correct_keys: ['A'],
+        explanation: '...',
+        elapsed_seconds: 0,
+        is_last: true,
+      },
+    });
+
+    const btn = wrapper.find('.explanation-next');
+    expect(btn.text()).toBe('Lihat Hasil');
+
+    await btn.trigger('click');
+    expect(wrapper.emitted('finish')).toHaveLength(1);
   });
 });

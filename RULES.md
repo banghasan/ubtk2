@@ -151,6 +151,16 @@ Setiap komponen dan view WAJIB punya test:
 Tidak wajib 100%, tapi setiap logika bisnis harus ditest.
 Test wajib passing sebelum commit.
 
+### 7.4 Testing Workflow
+Setiap selesai satu unit kerja (fitur/fix/refactor):
+
+1. **Jalankan test** — `bun run test` (backend dan frontend)
+2. **Ada fail?** — perbaiki kode atau test, ulangi langkah 1
+3. **Semua pass?** — lanjut ke unit kerja berikutnya
+
+Gunakan `bun run test:watch` saat development aktif agar test
+otomatis jalan ulang tiap perubahan file.
+
 ---
 
 ## 8. File & Code Convention

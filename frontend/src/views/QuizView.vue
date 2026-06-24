@@ -55,7 +55,7 @@
         :correct_keys="result.correct_keys"
         :explanation="result.explanation"
         :elapsed_seconds="finalTime"
-        @next="loadQuestion"
+        @next="nextQuestion"
       />
     </div>
 
@@ -96,6 +96,12 @@ const finalTime = ref(0);
 const errorMessage = ref('');
 const subjectId = ref(0);
 const topicLabel = ref('');
+const autoStart = ref(false);
+
+function nextQuestion() {
+  autoStart.value = true;
+  loadQuestion();
+}
 
 async function loadQuestion() {
   state.value = 'loading';
@@ -110,7 +116,13 @@ async function loadQuestion() {
       return;
     }
     question.value = q;
-    state.value = 'ready';
+    if (autoStart.value) {
+      autoStart.value = false;
+      timerRunning.value = true;
+      state.value = 'answering';
+    } else {
+      state.value = 'ready';
+    }
   } catch (e) {
     errorMessage.value = e instanceof Error ? e.message : 'Gagal memuat soal.';
     state.value = 'error';
@@ -174,6 +186,7 @@ watch(
   () => route.params.id,
   (newId) => {
     if (!newId) return;
+    autoStart.value = false;
     loadTopicInfo();
     loadQuestion();
   },

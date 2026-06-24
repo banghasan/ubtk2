@@ -9,8 +9,8 @@
 
 ### Backend
 
-- Hono API dengan 6 endpoint: subjects, topics, questions (random, count, check), auth, health
-- Drizzle ORM + 4 tabel: subjects, topics, questions, question_options
+- Hono API dengan 7 endpoint: subjects, topics (list + detail), questions (random, count, check), auth, health
+- Drizzle ORM + 4 tabel: subjects, topics, questions (+ `external_id`), question_options
 - Service layer (`question-service.ts`) — query terpusat
 - Validator layer (`question-validator.ts`) — Zod + validasi manual
 - Mapper layer (`question-response.ts`) — response shaping terpisah
@@ -59,6 +59,11 @@
 - Panduan deploy dengan Nginx Proxy Manager (opsi host & container)
 - Panduan: `docs/DEPLOY/`
 - Troubleshooting untuk koneksi MySQL, `network_mode: host`
+
+### Perbaikan
+
+- **Seed identity:** tambah kolom `external_id`. Dedup sekarang urut: `external_id` dulu, lalu `(topic_id + question_text)`. Soal dengan teks sama di topik beda tidak lagi dianggap duplikat.
+- **Lookup topik:** endpoint `GET /api/topics/:id`. QuizView pakai ini, tidak ada lagi hardcode ID 1-4.
 
 ### Dokumentasi
 

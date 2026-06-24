@@ -41,5 +41,34 @@ export function topicsRoutes(pool: Pool) {
     return c.json({ topics: rows });
   });
 
+  app.get('/:id', async (c) => {
+    const id = Number(c.req.param('id'));
+
+    if (!Number.isFinite(id) || id < 1) {
+      return c.json({ error: 'invalid_param', message: 'ID topik tidak valid.' }, 400);
+    }
+
+    const [topic] = await db
+      .select({
+        id: topics.id,
+        subject_id: topics.subject_id,
+        slug: topics.slug,
+        label: topics.label,
+        display_order: topics.display_order,
+        question_count: count(questions.id),
+      })
+      .from(topics)
+      .leftJoin(questions, eq(questions.topic_id, topics.id))
+      .where(eq(topics.id, id))
+      .groupBy(topics.id)
+      .limit(1);
+
+    if (!topic) {
+      return c.json({ error: 'not_found', message: 'Topik tidak ditemukan.' }, 404);
+    }
+
+    return c.json({ topic });
+  });
+
   return app;
 }

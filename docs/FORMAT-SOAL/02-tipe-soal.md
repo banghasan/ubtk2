@@ -9,6 +9,7 @@ Satu jawaban benar dari beberapa opsi.
   "topic_slug": "aljabar",
   "type": "single_choice",
   "difficulty": "easy",
+  "external_id": "q_aljabar_001",
   "question_text": "Hasil dari 2x + 5 = 13, maka nilai x adalah...",
   "explanation_text": "2x + 5 = 13 → 2x = 8 → x = 4",
   "options": [

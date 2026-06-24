@@ -94,9 +94,14 @@ Contoh:
 | `difficulty` | string | Ya | `easy` / `medium` / `hard` |
 | `question_text` | string | Ya | Isi soal. Bisa multi-baris. |
 | `explanation_text` | string | Ya | Pembahasan. Wajib diisi walau singkat. |
+| `external_id` | string | Tidak | ID stabil untuk dedup. Jika diisi, seed tidak akan membuat duplikat berdasarkan ID ini. |
 | `options` | array | Ya | Array opsi jawaban. |
 
-**Catatan dedup:** deteksi duplikasi berbasis `question_text`. Soal dengan teks identik (topik beda pun) dianggap sama dan tidak akan di-insert ulang.
+**Catatan dedup:** deteksi duplikasi dilakukan dengan urutan:
+1. Jika `external_id` diisi, cek berdasarkan `external_id`
+2. Jika tidak ada, cek berdasarkan `(topic_slug + question_text)` — jadi soal yang sama di topik beda tidak dianggap duplikat.
+
+Gunakan `external_id` untuk identitas soal yang stabil antar import. Tanpa `external_id`, soal deteksi berdasarkan teks yang bisa berubah.
 
 ### Options — Opsi Jawaban
 

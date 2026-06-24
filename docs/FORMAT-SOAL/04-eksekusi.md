@@ -24,7 +24,7 @@ Memasukkan data ke database. Output contoh:
 
 Perilaku penting:
 - Subject/topic yang sudah ada (by `slug`) tidak di-insert ulang
-- Soal yang sudah ada (by `question_text` identik) tidak di-insert ulang
+- Soal yang sudah ada — dicek `external_id` dulu, lalu `(topic_id + question_text)` — tidak di-insert ulang
 
 ## Validasi Format
 

@@ -1,0 +1,1 @@
+ALTER TABLE `questions` ADD `external_id` varchar(100);

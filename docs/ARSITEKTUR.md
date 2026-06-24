@@ -90,6 +90,7 @@ subjects  ──<  topics  ──<  questions  ──<  question_options
 | difficulty | enum | `easy`, `medium`, `hard` |
 | question_text | text | Isi soal |
 | explanation_text | text | Pembahasan |
+| external_id | varchar(100) nullable | ID stabil untuk dedup |
 | created_at | timestamp | |
 
 ### question_options
@@ -150,6 +151,16 @@ Daftar topic + `question_count`.
   "topics": [
     { "id": 1, "subject_id": 1, "slug": "...", "label": "...", "display_order": 1, "question_count": 4 }
   ]
+}
+```
+
+### `GET /api/topics/:id`
+
+Detail satu topic + `question_count`. Untuk lookup subject dari topic.
+
+```json
+{
+  "topic": { "id": 1, "subject_id": 1, "slug": "...", "label": "...", "display_order": 1, "question_count": 4 }
 }
 ```
 

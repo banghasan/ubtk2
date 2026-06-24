@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlEnum, int, text, timestamp } from 'drizzle-orm/mysql-core';
+import { mysqlTable, mysqlEnum, int, text, timestamp, varchar } from 'drizzle-orm/mysql-core';
 import { topics } from './topics';
 
 export const questions = mysqlTable('questions', {
@@ -8,5 +8,6 @@ export const questions = mysqlTable('questions', {
   difficulty: mysqlEnum('difficulty', ['easy', 'medium', 'hard']).notNull(),
   question_text: text('question_text').notNull(),
   explanation_text: text('explanation_text').notNull(),
+  external_id: varchar('external_id', { length: 100 }),
   created_at: timestamp('created_at').defaultNow().notNull(),
 });

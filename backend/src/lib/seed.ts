@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { drizzle } from 'drizzle-orm/mysql2';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
 import { createPool } from '../db/connection';
 import { subjects } from '../db/schema/subjects';
@@ -20,6 +20,7 @@ const questionSchema = z.object({
   topic_slug: z.string().min(1),
   type: z.enum(['single_choice', 'multiple_response', 'true_false']),
   difficulty: z.enum(['easy', 'medium', 'hard']),
+  external_id: z.string().optional(),
   question_text: z.string().min(1),
   explanation_text: z.string().min(1),
   options: z.array(optionSchema),
@@ -173,10 +174,21 @@ export async function seed() {
       continue;
     }
 
-    const [existing] = await db.select({ id: questions.id })
-      .from(questions)
-      .where(eq(questions.question_text, q.question_text))
-      .limit(1);
+    let existing;
+
+    if (q.external_id) {
+      [existing] = await db.select({ id: questions.id })
+        .from(questions)
+        .where(eq(questions.external_id, q.external_id))
+        .limit(1);
+    }
+
+    if (!existing) {
+      [existing] = await db.select({ id: questions.id })
+        .from(questions)
+        .where(and(eq(questions.topic_id, topic.id), eq(questions.question_text, q.question_text)))
+        .limit(1);
+    }
 
     if (existing) continue;
 
@@ -186,6 +198,7 @@ export async function seed() {
       difficulty: q.difficulty,
       question_text: q.question_text,
       explanation_text: q.explanation_text,
+      external_id: q.external_id ?? null,
     });
 
     const questionId = Number(inserted.insertId);

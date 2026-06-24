@@ -3,8 +3,7 @@ import {
   checkAnswer as apiCheckAnswer,
   fetchQuestionCount,
   fetchRandomQuestion,
-  fetchSubjects,
-  fetchTopics,
+  fetchTopic,
 } from '@/api/client';
 import type { CheckResult, Question } from '@/types';
 
@@ -144,13 +143,10 @@ export function useQuizSession(options: UseQuizSessionOptions) {
     }
 
     try {
-      const subjects = await fetchSubjects();
-      const topicLists = await Promise.all(subjects.map((subject) => fetchTopics(subject.id)));
-      const found = topicLists.flat().find((topic) => topic.id === options.getTopicId());
-
-      if (found) {
-        subjectId.value = found.subject_id;
-        topicLabel.value = found.label;
+      const topic = await fetchTopic(options.getTopicId());
+      if (topic) {
+        subjectId.value = topic.subject_id;
+        topicLabel.value = topic.label;
       }
     } catch {
       subjectId.value = 1;

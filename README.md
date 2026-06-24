@@ -1,9 +1,14 @@
 # UTBK Belajar
 
-Aplikasi web sederhana untuk belajar soal UTBK.
+Aplikasi web minimal untuk latihan soal UTBK.
+Dibuat untuk kebutuhan belajar mandiri, dengan bantuan AI
+untuk menyusun soal, dan disajikan dalam tampilan web yang
+fokus — tanpa distraksi, tanpa riwayat, tanpa gamifikasi.
+
+Tujuan: kamu dan soal. Selesai satu, lanjut berikutnya.
 
 | | |
-|---|---|
+|---|---|---|
 | ![home](docs/screenshots/02-home.png) | ![quiz-ready](docs/screenshots/03-ready.png) |
 | ![quiz](docs/screenshots/04-answering.png) | ![review](docs/screenshots/05-reviewing.png) |
 
@@ -12,6 +17,32 @@ Flow: pilih topik → kerjakan soal acak → timer → jawab → lihat pembahasa
 - **Stack:** Bun + Hono + Drizzle + MariaDB + Vue 3
 - **Auth opsional:** via `APP_PASSWORD` di `.env`
 - **Testing:** 51 test (Vitest)
+
+---
+
+## Tentang
+
+Ujian Tulis Berbasis Komputer (UTBK) adalah gerbang masuk
+Perguruan Tinggi Negeri di Indonesia. Persiapan yang matang
+sangat menentukan — dan latihan soal adalah salah satu cara
+paling efektif.
+
+Dulu, menyusun bank soal sendiri butuh waktu dan tenaga besar.
+Sekarang, dengan bantuan AI, siapapun bisa menghasilkan puluhan
+soal berkualitas dalam hitungan menit. Tapi punya koleksi soal
+saja tidak cukup — butuh wadah yang tepat untuk mengerjakannya.
+
+**UTBK Belajar** hadir sebagai wadah itu:
+
+- Soal diimpor dari file JSON — mudah digenerate oleh AI
+  (lihat panduan di `docs/FORMAT-SOAL/`)
+- Satu soal per halaman — fokus, tidak overload
+- Timer per soal — ukur kecepatan tanpa tekanan
+- Pembahasan langsung — belajar dari kesalahan saat itu juga
+- Resume di akhir — lihat skor dan waktu total sebagai evaluasi
+
+Tidak ada login berlapis, tidak ada leaderboard, tidak ada
+notifikasi. Buka, kerjakan, tutup.
 
 ---
 

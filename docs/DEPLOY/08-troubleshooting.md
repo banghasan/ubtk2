@@ -78,3 +78,21 @@ Dengan `network_mode: host`:
 - App bisa akses `127.0.0.1:3306` langsung
 - App jalan di `localhost:3000` tanpa port mapping
 - Pasang reverse proxy (Caddy/Nginx) di host jika ingin dibuka publik
+
+## File `.js`, `.vue.js`, `tsconfig.tsbuildinfo` muncul setelah pull
+
+File generated, bukan untuk di-commit. Hapus:
+
+```bash
+git clean -fdX
+```
+
+## `bun.lock` berubah setelah install
+
+Gunakan `--frozen-lockfile` di VPS:
+
+```bash
+bun install --frozen-lockfile
+```
+
+Jika gagal, ada dependency baru. Jalankan `bun install` di dev, commit `bun.lock`, deploy ulang.

@@ -10,7 +10,7 @@ cd utbk2
 ## 2. Install Dependency
 
 ```bash
-bun install
+bun install --frozen-lockfile
 bun run install:all
 ```
 

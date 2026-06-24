@@ -4,3 +4,9 @@ dist/
 *.log
 drizzle/meta/
 .playwright-mcp/
+
+# Generated files (Vue/TS compile output)
+frontend/src/**/*.js
+frontend/src/**/*.vue.js
+frontend/tsconfig.tsbuildinfo
+backend/dist/

@@ -2,7 +2,7 @@
 
 ```bash
 git pull
-bun install
+bun install --frozen-lockfile
 bun run install:all
 bun run build:frontend
 bun run seed:check

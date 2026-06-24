@@ -43,6 +43,12 @@ describe('checkAnswer - single_choice', () => {
     expect(result.correct).toBe(false);
     expect(result.correct_keys).toEqual(['B']);
   });
+
+  it('returns incorrect when multiple keys are submitted', () => {
+    const result = checkAnswer('single_choice', ['B', 'A'], sampleOptions);
+    expect(result.correct).toBe(false);
+    expect(result.correct_keys).toEqual(['B']);
+  });
 });
 
 describe('checkAnswer - multiple_response', () => {
@@ -70,6 +76,12 @@ describe('checkAnswer - multiple_response', () => {
   it('returns incorrect when empty', () => {
     const result = checkAnswer('multiple_response', [], multiOptions);
     expect(result.correct).toBe(false);
+  });
+
+  it('returns incorrect when duplicate keys are submitted', () => {
+    const result = checkAnswer('multiple_response', ['A', 'A'], multiOptions);
+    expect(result.correct).toBe(false);
+    expect(result.correct_keys).toEqual(['A', 'C']);
   });
 });
 

@@ -108,6 +108,7 @@ import {
   checkAnswer as apiCheckAnswer,
   fetchTopics,
   fetchQuestionCount,
+  fetchSubjects,
 } from '@/api/client';
 import type { Question, CheckResult } from '@/types';
 import QuestionCard from '@/components/QuestionCard.vue';
@@ -229,22 +230,29 @@ async function submitAnswer() {
 }
 
 async function loadTopicInfo() {
+  const querySubjectId = Number(route.query.subject_id);
+  const queryTopicLabel = typeof route.query.topic_label === 'string' ? route.query.topic_label : '';
+
+  if (Number.isInteger(querySubjectId) && querySubjectId > 0) {
+    subjectId.value = querySubjectId;
+  }
+
+  if (queryTopicLabel) {
+    topicLabel.value = queryTopicLabel;
+  }
+
+  if (subjectId.value > 0 && topicLabel.value) {
+    return;
+  }
+
   try {
-    const topics = await fetchTopics(getTopicId());
-    const t = topics[0];
-    if (t) {
-      subjectId.value = t.subject_id;
-      topicLabel.value = t.label;
-    } else {
-      const allTopics = await Promise.all([
-        fetchTopics(1), fetchTopics(2), fetchTopics(3), fetchTopics(4),
-      ]);
-      const flat = allTopics.flat();
-      const found = flat.find((tp) => tp.id === getTopicId());
-      if (found) {
-        subjectId.value = found.subject_id;
-        topicLabel.value = found.label;
-      }
+    const subjects = await fetchSubjects();
+    const topicLists = await Promise.all(subjects.map((subject) => fetchTopics(subject.id)));
+    const found = topicLists.flat().find((topic) => topic.id === getTopicId());
+
+    if (found) {
+      subjectId.value = found.subject_id;
+      topicLabel.value = found.label;
     }
   } catch {
     subjectId.value = 1;

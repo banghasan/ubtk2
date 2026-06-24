@@ -18,6 +18,28 @@ const checkBodySchema = z.object({
   selected_keys: z.array(z.string().min(1)).min(1),
 });
 
+function validateSelectedKeys(
+  questionType: QuestionType,
+  selectedKeys: string[],
+  validOptionKeys: string[],
+): string | null {
+  const selectedSet = new Set(selectedKeys);
+
+  if (selectedSet.size !== selectedKeys.length) {
+    return 'selected_keys tidak boleh duplikat.';
+  }
+
+  if (!selectedKeys.every((key) => validOptionKeys.includes(key))) {
+    return 'selected_keys mengandung opsi yang tidak valid.';
+  }
+
+  if ((questionType === 'single_choice' || questionType === 'true_false') && selectedKeys.length !== 1) {
+    return 'Tipe soal ini hanya menerima satu jawaban.';
+  }
+
+  return null;
+}
+
 export function questionsRoutes(pool: Pool) {
   const db = drizzle(pool, { schema, mode: 'default' });
   const app = new Hono();
@@ -115,6 +137,16 @@ export function questionsRoutes(pool: Pool) {
       })
       .from(questionOptions)
       .where(eq(questionOptions.question_id, id));
+
+    const validationError = validateSelectedKeys(
+      question.type as QuestionType,
+      parsed.data.selected_keys,
+      options.map((option) => option.key),
+    );
+
+    if (validationError) {
+      return c.json({ error: 'invalid_body', message: validationError }, 400);
+    }
 
     const result = checkAnswer(question.type as QuestionType, parsed.data.selected_keys, options);
 

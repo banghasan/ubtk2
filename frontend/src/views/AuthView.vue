@@ -23,13 +23,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const password = ref('');
 const loading = ref(false);
 const error = ref('');
+
+onMounted(async () => {
+  try {
+    const res = await fetch('/api/auth');
+    if (!res.ok) return;
+    const data = await res.json() as { auth_enabled?: boolean };
+    if (!data.auth_enabled) {
+      router.replace('/');
+    }
+  } catch {
+    // Let the login form handle server connectivity issues when submitted.
+  }
+});
 
 async function login() {
   if (!password.value) return;

@@ -27,12 +27,20 @@ export function checkAnswer(
     .map((o) => o.key);
 
   if (type === 'single_choice' || type === 'true_false') {
+    if (selectedKeys.length !== 1) {
+      return { correct: false, correct_keys: correctKeys };
+    }
+
     const selected = selectedKeys[0] ?? '';
     const correct = correctKeys.includes(selected);
     return { correct, correct_keys: correctKeys };
   }
 
   if (type === 'multiple_response') {
+    if (new Set(selectedKeys).size !== selectedKeys.length) {
+      return { correct: false, correct_keys: correctKeys };
+    }
+
     if (selectedKeys.length !== correctKeys.length) {
       return { correct: false, correct_keys: correctKeys };
     }

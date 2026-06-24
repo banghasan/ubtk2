@@ -13,7 +13,7 @@
       <router-link
         v-for="topic in topics"
         :key="topic.id"
-        :to="`/quiz/${topic.id}`"
+        :to="{ path: `/quiz/${topic.id}`, query: { subject_id: String(subjectId), topic_label: topic.label } }"
         class="topic-card"
       >
         <span class="topic-label">{{ topic.label }} <span class="topic-count">({{ topic.question_count }})</span></span>

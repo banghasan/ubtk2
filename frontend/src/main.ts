@@ -18,11 +18,26 @@ const router = createRouter({
   routes,
 });
 
+async function getAuthEnabled(): Promise<boolean> {
+  try {
+    const res = await fetch('/api/auth');
+    if (!res.ok) return true;
+    const data = await res.json() as { auth_enabled?: boolean };
+    return Boolean(data.auth_enabled);
+  } catch {
+    return true;
+  }
+}
+
+const authEnabled = await getAuthEnabled();
+
 router.beforeEach((to, _from, next) => {
   const token = sessionStorage.getItem('auth_token');
   const needsAuth = to.matched.some((r) => r.meta.requiresAuth);
 
-  if (needsAuth && !token) {
+  if (to.path === '/auth' && !authEnabled) {
+    next('/');
+  } else if (needsAuth && authEnabled && !token) {
     next('/auth');
   } else {
     next();

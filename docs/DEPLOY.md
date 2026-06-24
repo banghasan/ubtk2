@@ -67,7 +67,33 @@ cd utbk2
 
 ---
 
-## 2. Install Dependency
+## 2. Gambaran Stack di VPS
+
+Untuk skenario satu domain dengan Nginx Proxy Manager, susunannya seperti ini:
+
+```text
+Internet
+   |
+   v
+Nginx Proxy Manager (container)
+   |
+   v
+app:3000 (container Bun/Hono)
+   |
+   v
+MySQL / MariaDB di host atau container lain
+```
+
+Prinsip penting:
+
+- domain publik hanya mengarah ke NPM
+- NPM meneruskan semua request ke `app:3000`
+- frontend dan backend tetap satu origin
+- route API tetap di `/api`
+
+---
+
+## 3. Install Dependency
 
 Install dependency root untuk tooling, lalu package backend/frontend:
 
@@ -78,7 +104,7 @@ bun run install:all
 
 ---
 
-## 3. Build Frontend
+## 4. Build Frontend
 
 ```bash
 cd frontend
@@ -90,7 +116,7 @@ Hasil build akan masuk ke `frontend/dist/`.
 
 ---
 
-## 4. Setup Environment
+## 5. Setup Environment
 
 ```bash
 cp .env.production.example .env
@@ -120,7 +146,7 @@ Catatan:
 
 ---
 
-## 5. Pastikan Database Bisa Diakses
+## 6. Pastikan Database Bisa Diakses
 
 MySQL harus menerima koneksi TCP.
 
@@ -137,7 +163,7 @@ mysql -h 127.0.0.1 -u root -p -e "CREATE DATABASE IF NOT EXISTS utbk_belajar CHA
 
 ---
 
-## 6. Validasi Seed Sebelum Deploy
+## 7. Validasi Seed Sebelum Deploy
 
 Sebelum container dijalankan, validasi dulu `seed.json`:
 
@@ -149,7 +175,19 @@ Jika command ini gagal, perbaiki `seed.json` dulu sebelum lanjut.
 
 ---
 
-## 7. Pilih Topologi NPM
+## 8. Buat Docker Network Bersama
+
+Jika NPM berjalan sebagai container terpisah, buat satu network bersama:
+
+```bash
+docker network create npm_network
+```
+
+Jika network itu sudah ada, Docker akan memberi tahu dan Anda bisa lanjut.
+
+---
+
+## 9. Pilih Topologi NPM
 
 Ada dua skenario umum.
 
@@ -277,7 +315,74 @@ Namun jika tidak perlu debug dari host, `expose` saja sudah cukup.
 
 ---
 
-## 8. Jalankan Container App
+## 10. Contoh Stack Minimal NPM + App
+
+Jika Anda ingin gambaran utuh, berikut contoh minimal dua compose terpisah:
+
+### A. Compose untuk Nginx Proxy Manager
+
+```yaml
+services:
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - npm_network
+
+networks:
+  npm_network:
+    external: true
+```
+
+### B. Compose untuk aplikasi ini
+
+```yaml
+services:
+  app:
+    image: oven/bun:1.3.14
+    restart: unless-stopped
+    expose:
+      - "3000"
+    volumes:
+      - ./frontend/dist:/app/frontend/dist
+      - ./backend:/app/backend
+      - ./seed.json:/app/seed.json
+    working_dir: /app/backend
+    command: ["bun", "src/index.ts"]
+    environment:
+      DB_HOST: ${DB_HOST:-172.17.0.1}
+      DB_PORT: "3306"
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+      DB_NAME: ${DB_NAME:-utbk_belajar}
+      APP_PORT: "3000"
+      APP_PASSWORD: ${APP_PASSWORD:-}
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://domain-anda.com}
+      NODE_ENV: production
+    networks:
+      - npm_network
+
+networks:
+  npm_network:
+    external: true
+```
+
+Catatan:
+
+- NPM dan app tidak harus dalam file compose yang sama
+- yang penting keduanya join ke `npm_network`
+- di NPM nanti upstream cukup diarahkan ke `app:3000`
+
+---
+
+## 11. Jalankan Container App
 
 ```bash
 docker compose up -d
@@ -293,7 +398,7 @@ Ringkasannya:
 
 ---
 
-## 9. Konfigurasi Nginx Proxy Manager
+## 12. Konfigurasi Nginx Proxy Manager
 
 ### Jika NPM proxy ke host loopback
 
@@ -331,7 +436,7 @@ Di tab SSL pada NPM:
 
 ---
 
-## 10. Jalankan Migrasi dan Seed
+## 13. Jalankan Migrasi dan Seed
 
 ```bash
 docker compose exec app bun src/db/migrate.ts
@@ -347,7 +452,7 @@ docker compose exec app bun src/lib/seed.ts
 
 ---
 
-## 11. Verifikasi Deploy
+## 14. Verifikasi Deploy
 
 ### Cek dasar
 
@@ -404,7 +509,31 @@ curl https://domain-anda.com/api/subjects
 
 ---
 
-## 12. Checklist Produksi Satu Domain
+## 15. Checklist Operasional dari Nol
+
+Urutan kerja paling aman di VPS:
+
+1. arahkan DNS domain ke IP VPS
+2. install Docker dan Docker Compose
+3. siapkan database MySQL/MariaDB
+4. clone repo
+5. jalankan `bun install` dan `bun run install:all`
+6. build frontend
+7. isi file `.env`
+8. jalankan `bun run seed:check`
+9. buat `npm_network`
+10. jalankan NPM
+11. jalankan app
+12. jalankan migrasi dan seed
+13. buat Proxy Host di NPM ke `app:3000`
+14. aktifkan SSL
+15. cek `https://domain-anda.com/health`
+16. cek `https://domain-anda.com/api/auth`
+17. buka domain di browser dan pastikan frontend serta `/api` berjalan
+
+---
+
+## 16. Checklist Produksi Satu Domain
 
 Sebelum dianggap selesai:
 
@@ -418,7 +547,7 @@ Sebelum dianggap selesai:
 
 ---
 
-## 13. Update Kode
+## 17. Update Kode
 
 Saat ada update:
 

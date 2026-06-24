@@ -25,6 +25,8 @@ const formatted = computed(() => {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 });
 
+defineExpose({ formatted });
+
 watch(
   () => props.running,
   (val) => {

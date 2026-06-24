@@ -6,7 +6,12 @@
     </div>
 
     <div v-if="state === 'loading'" class="quiz-loading">
-      Memuat soal...
+      <p>Memuat soal...</p>
+    </div>
+
+    <div v-else-if="state === 'ready'" class="quiz-ready">
+      <p class="ready-text">Siap berlatih?</p>
+      <button class="quiz-start-btn" @click="startQuiz">Mulai</button>
     </div>
 
     <div v-else-if="state === 'no-question'" class="quiz-empty">
@@ -71,7 +76,6 @@ import {
   fetchRandomQuestion,
   checkAnswer as apiCheckAnswer,
   fetchTopics,
-  fetchSubjects,
 } from '@/api/client';
 import type { Question, CheckResult } from '@/types';
 import QuestionCard from '@/components/QuestionCard.vue';
@@ -85,7 +89,7 @@ function getTopicId(): number {
   return Number(route.params.id);
 }
 
-type QuizState = 'loading' | 'answering' | 'reviewing' | 'no-question' | 'error';
+type QuizState = 'loading' | 'ready' | 'answering' | 'reviewing' | 'no-question' | 'error';
 
 const state = ref<QuizState>('loading');
 const question = ref<Question | null>(null);
@@ -110,12 +114,16 @@ async function loadQuestion() {
       return;
     }
     question.value = q;
-    timerRunning.value = true;
-    state.value = 'answering';
+    state.value = 'ready';
   } catch (e) {
     errorMessage.value = e instanceof Error ? e.message : 'Gagal memuat soal.';
     state.value = 'error';
   }
+}
+
+function startQuiz() {
+  timerRunning.value = true;
+  state.value = 'answering';
 }
 
 function onSelectKeys(keys: string[]) {
@@ -206,6 +214,7 @@ onMounted(() => {
 }
 
 .quiz-loading,
+.quiz-ready,
 .quiz-empty,
 .quiz-error {
   text-align: center;
@@ -220,6 +229,29 @@ onMounted(() => {
 
 .quiz-empty p {
   margin-bottom: 20px;
+}
+
+.ready-text {
+  font-size: 1.3rem;
+  color: #445566;
+  margin-bottom: 24px;
+}
+
+.quiz-start-btn {
+  padding: 16px 48px;
+  background: #1e40af;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.quiz-start-btn:hover {
+  background: #1c3a9c;
+  transform: scale(1.03);
 }
 
 .quiz-back-btn {

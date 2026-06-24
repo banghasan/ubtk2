@@ -36,8 +36,14 @@ Lokasi: `/home/DATA/Proyek/AHE/utbk2/`
 
 Aturan berikut TIDAK BOLEH diubah tanpa diskusi eksplisit:
 
-### 3.1 Tidak Ada Autentikasi
-Aplikasi ini single-user lokal. Tidak perlu login, session, JWT, atau middleware auth.
+### 3.1 Autentikasi Opsional
+Aplikasi punya lapisan password sederhana. Jika `APP_PASSWORD` diisi di `.env`:
+- User harus login via halaman `/auth` sebelum bisa mengakses
+- Backend mewajibkan header `x-auth-token` untuk semua request API
+- Token bersifat in-memory di server (hilang saat server restart)
+
+Jika `APP_PASSWORD` kosong, autentikasi tidak aktif.
+Aplikasi bisa diakses langsung tanpa login.
 
 ### 3.2 Tidak Ada Riwayat / Skor Tersimpan
 Setiap soal selesai dibahas, selesai. Tidak ada tabel attempt, answer, snapshot, atau penyimpanan hasil apa pun di database.

@@ -48,7 +48,10 @@ DB_USER=root
 DB_PASSWORD=password-anda
 DB_NAME=utbk_belajar
 APP_PORT=3000
+APP_PASSWORD=secretttt     # Password untuk akses aplikasi
 ```
+
+**Catatan:** jika `APP_PASSWORD` dikosongkan, autentikasi tidak aktif dan aplikasi bisa diakses langsung. Ini berguna untuk development lokal.
 
 ---
 

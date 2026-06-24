@@ -3,12 +3,21 @@ import type { Subject, Topic, Question, CheckResult } from '@/types';
 const BASE = '/api';
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${url}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
+  const token = sessionStorage.getItem('auth_token');
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['x-auth-token'] = token;
+
+  const mergedHeaders = { ...headers, ...(options?.headers as Record<string, string>) };
+  const res = await fetch(`${BASE}${url}`, { ...options, headers: mergedHeaders });
+
+  if (res.status === 401) {
+    sessionStorage.removeItem('auth_token');
+    window.location.href = '/auth';
+    throw new Error('Sesi berakhir.');
+  }
+
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ message: 'Network error' }));
+    const body = await res.json().catch(() => ({ message: 'Gagal memuat data.' }));
     throw new Error(body.message || `HTTP ${res.status}`);
   }
   return res.json();

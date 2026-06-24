@@ -4,7 +4,7 @@ import { createApp } from './app';
 import { createPool } from './db/connection';
 import { applyMigrations } from './db/migrate';
 
-function loadEnv(): { port: number; frontendPort: number } {
+function loadEnv(): { port: number; frontendPort: number; appPassword: string } {
   const envPath = path.join(process.cwd(), '..', '.env');
   const raw = fs.readFileSync(envPath, 'utf8');
   const map: Record<string, string> = {};
@@ -20,6 +20,7 @@ function loadEnv(): { port: number; frontendPort: number } {
   return {
     port: Number(map['APP_PORT']) || 3000,
     frontendPort: Number(map['FRONTEND_PORT']) || 5173,
+    appPassword: map['APP_PASSWORD'] || '',
   };
 }
 
@@ -29,7 +30,7 @@ await applyMigrations(pool);
 
 const env = loadEnv();
 
-const app = createApp({ pool, frontendPort: env.frontendPort });
+const app = createApp({ pool, frontendPort: env.frontendPort, appPassword: env.appPassword });
 
 const port = env.port;
 

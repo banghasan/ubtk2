@@ -1,13 +1,16 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { authRoutes } from './routes/auth';
 import { subjectsRoutes } from './routes/subjects';
 import { topicsRoutes } from './routes/topics';
 import { questionsRoutes } from './routes/questions';
+import { requireAuth } from './middleware/require-auth';
 import type { Pool } from './db/connection';
 
 interface AppConfig {
   pool: Pool;
   frontendPort: number;
+  appPassword: string;
 }
 
 export function createApp(config: AppConfig) {
@@ -20,6 +23,14 @@ export function createApp(config: AppConfig) {
       credentials: true,
     }),
   );
+
+  app.route('/api/auth', authRoutes(config.appPassword));
+
+  if (config.appPassword) {
+    app.use('/api/subjects', requireAuth);
+    app.use('/api/topics', requireAuth);
+    app.use('/api/questions', requireAuth);
+  }
 
   app.onError((err, c) => {
     console.error('[error]', err);

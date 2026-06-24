@@ -1,7 +1,18 @@
-# Panduan Deploy Docker (No Build Image)
+# Panduan Deploy Docker
 
-> Prasyarat: Docker dan Docker Compose sudah terinstall di VPS.
-> Database MySQL/MariaDB sudah berjalan di VPS (tidak perlu container terpisah).
+Panduan ini memakai jalur deploy utama yang sederhana:
+
+1. build frontend
+2. siapkan backend + env
+3. validasi seed
+4. jalankan container
+5. migrasi, seed, dan health check
+
+Prasyarat:
+
+- Docker dan Docker Compose sudah terpasang
+- Database MySQL/MariaDB sudah berjalan di host/VPS
+- Database `utbk_belajar` sudah dibuat atau bisa dibuat
 
 ---
 
@@ -14,28 +25,26 @@ cd utbk2
 
 ---
 
-## 2. Build Frontend
+## 2. Install Dependency
 
-Jalankan di VPS atau di komputer yang ada Bun:
+Install dependency root untuk tooling, lalu package backend/frontend:
+
+```bash
+bun install
+bun run install:all
+```
+
+---
+
+## 3. Build Frontend
 
 ```bash
 cd frontend
-bun install
 bun run build
 cd ..
 ```
 
-Hasilnya: folder `frontend/dist/` berisi file HTML, JS, CSS siap serving.
-
----
-
-## 3. Install Backend Dependencies
-
-```bash
-cd backend
-bun install
-cd ..
-```
+Hasil build akan masuk ke `frontend/dist/`.
 
 ---
 
@@ -46,51 +55,53 @@ cp .env.production.example .env
 nano .env
 ```
 
-Isi file `.env`:
+Contoh isi:
 
-```
+```env
 DB_HOST=172.17.0.1
 DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=password-mysql-anda
 DB_NAME=utbk_belajar
+APP_PORT=3000
+FRONTEND_PORT=5173
 APP_PASSWORD=password-untuk-akses-aplikasi
 ```
 
-**Catatan DB_HOST:**
-- `172.17.0.1` — IP Docker bridge gateway (akses MySQL dari container, Linux default)
-- Kalau tidak bisa, coba `host.docker.internal` (Mac/Windows)
-- Alternatif: jalankan container dengan `network_mode: host` dan set `DB_HOST=127.0.0.1`
+Catatan:
+
+- `APP_PASSWORD` boleh dikosongkan jika ingin auth nonaktif
+- `172.17.0.1` adalah Docker bridge gateway yang umum di Linux
+- Jika tidak cocok, coba `host.docker.internal` atau jalankan container dengan `network_mode: host`
 
 ---
 
-## 5. Pastikan MySQL Bisa Diakses dari Container
+## 5. Pastikan Database Bisa Diakses
 
-MySQL di host harus terima koneksi TCP, bukan cuma Unix socket.
-Cek di VPS:
+MySQL harus menerima koneksi TCP.
 
 ```bash
-# Cek apakah MySQL dengar di port 3306
 ss -tlnp | grep 3306
-
-# Kalau cuma dengar di 127.0.0.1:3306, itu aman — container tetap bisa
-# lewat IP gateway 172.17.0.1
-```
-
-Pastikan user MySQL (root) bisa login via TCP:
-
-```bash
-# Test dari VPS langsung
 mysql -h 127.0.0.1 -u root -p
 ```
 
----
-
-## 6. Buat Database (jika belum ada)
+Jika database belum ada:
 
 ```bash
 mysql -h 127.0.0.1 -u root -p -e "CREATE DATABASE IF NOT EXISTS utbk_belajar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
+
+---
+
+## 6. Validasi Seed Sebelum Deploy
+
+Sebelum container dijalankan, validasi dulu `seed.json`:
+
+```bash
+bun run seed:check
+```
+
+Jika command ini gagal, perbaiki `seed.json` dulu sebelum lanjut.
 
 ---
 
@@ -100,56 +111,100 @@ mysql -h 127.0.0.1 -u root -p -e "CREATE DATABASE IF NOT EXISTS utbk_belajar CHA
 docker compose up -d
 ```
 
-Penjelasan:
+Ringkasannya:
 
-| Baris | Arti |
-|---|---|
-| `image: oven/bun:1.3.14` | Pakai image bun langsung, tanpa build |
-| `volumes` | Mount folder project ke container — tidak perlu build image |
-| `working_dir: /app/backend` | Masuk ke folder backend |
-| `command: ["bun", "src/index.ts"] | Jalankan backend |
+- container memakai image `oven/bun`
+- frontend build di-mount dari `frontend/dist`
+- backend source di-mount dari `backend/`
+- app dijalankan dari `/app/backend`
 
 ---
 
-## 8. Jalankan Migrasi & Seed
+## 8. Jalankan Migrasi dan Seed
 
 ```bash
-# Masuk ke container
 docker compose exec app bun src/db/migrate.ts
+docker compose exec app bun src/lib/seed.ts
+```
+
+Jika Anda mengubah `seed.json` di server:
+
+```bash
+bun run seed:check
 docker compose exec app bun src/lib/seed.ts
 ```
 
 ---
 
-## 9. Cek Apakah Berjalan
+## 9. Verifikasi Deploy
+
+### Cek dasar
 
 ```bash
-# Cek status container
 docker compose ps
-
-# Cek log
 docker compose logs -f
+curl http://localhost:3000/health
+```
 
-# Test API
-curl http://localhost:3000/api/subjects -H "x-auth-token: $(curl -s http://localhost:3000/api/auth -X POST -H 'Content-Type: application/json' -d '{"password":"PASSWORD_APP_ANDA"}' | python3 -c 'import sys,json; print(json.load(sys.stdin)["token"])')"
+Response yang benar:
+
+```json
+{ "status": "ok" }
+```
+
+### Cek auth mode
+
+Cek status auth:
+
+```bash
+curl http://localhost:3000/api/auth
+```
+
+Jika `auth_enabled` bernilai `false`, aplikasi bisa diakses langsung.
+
+Jika `auth_enabled` bernilai `true`, ambil token dulu:
+
+```bash
+curl -s http://localhost:3000/api/auth \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  -d '{"password":"PASSWORD_APP_ANDA"}'
+```
+
+Lalu pakai token itu untuk test endpoint:
+
+```bash
+curl http://localhost:3000/api/subjects -H "x-auth-token: TOKEN_ANDA"
+```
+
+Jika auth nonaktif:
+
+```bash
+curl http://localhost:3000/api/subjects
 ```
 
 ---
 
 ## 10. Update Kode
 
+Saat ada update:
+
 ```bash
 git pull
-
-# Kalau ada perubahan di frontend
-cd frontend && bun install && bun run build && cd ..
-
-# Restart container
+bun install
+bun run install:all
+cd frontend && bun run build && cd ..
+bun run seed:check
 docker compose restart
-
-# Kalau ada perubahan tabel database
 docker compose exec app bun src/db/migrate.ts
 docker compose exec app bun src/lib/seed.ts
+```
+
+Setelah update, cek lagi:
+
+```bash
+curl http://localhost:3000/health
+docker compose logs --tail=100
 ```
 
 ---
@@ -158,39 +213,48 @@ docker compose exec app bun src/lib/seed.ts
 
 ### Container tidak bisa konek ke MySQL
 
-Error: `connect ECONNREFUSED 172.17.0.1:3306`
+Error:
 
-Penyebab:
-1. MySQL hanya bind ke `127.0.0.1` bukan `0.0.0.0`
-2. Firewall blokir port 3306
+```text
+connect ECONNREFUSED 172.17.0.1:3306
+```
+
+Kemungkinan:
+
+1. MySQL hanya bind ke `127.0.0.1`
+2. Firewall memblokir port 3306
 
 Cek:
-```bash
-# Lihat bind address MySQL
-sudo grep bind-address /etc/mysql/mariadb.conf.d/50-server.cnf
 
-# Kalau 127.0.0.1, ganti jadi 0.0.0.0
-# Lalu restart MySQL
+```bash
+sudo grep bind-address /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+
+Jika perlu, ubah bind address dan restart MySQL:
+
+```bash
 sudo systemctl restart mariadb
 ```
 
-### MySQL user root tidak bisa login via TCP
+### User MySQL tidak bisa login via TCP
 
 ```bash
-# Masuk ke MySQL
 sudo mysql -u root
+```
 
-# Beri akses root dari IP Docker
+Lalu beri akses yang sesuai:
+
+```sql
 CREATE USER IF NOT EXISTS 'root'@'172.17.0.%' IDENTIFIED BY 'PASSWORD';
 CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED BY 'PASSWORD';
 FLUSH PRIVILEGES;
 ```
 
-Atau cara lebih simpel: pakai `network_mode: host` di docker-compose.
+### Alternatif: `network_mode: host`
 
-### Alternative: network_mode host
+Jika jalur bridge Docker tidak cocok, Anda bisa pakai host networking.
 
-Edit `docker-compose.yml`:
+Contoh:
 
 ```yaml
 services:
@@ -211,10 +275,14 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-}
       DB_NAME: utbk_belajar
       APP_PORT: "3000"
+      FRONTEND_PORT: "5173"
       APP_PASSWORD: ${APP_PASSWORD:-}
       NODE_ENV: production
 ```
 
-Dengan `network_mode: host`, container bisa akses `127.0.0.1:3306` langsung.
-Tapi app juga jalan di `localhost:3000` tanpa port mapping.
-Untuk publik, pasang reverse proxy (Caddy/Nginx) di host.
+Dengan `network_mode: host`:
+
+- app bisa akses `127.0.0.1:3306` langsung
+- app juga berjalan di `localhost:3000` tanpa port mapping
+
+Jika aplikasi ingin dibuka publik, pasang reverse proxy seperti Caddy atau Nginx di host.

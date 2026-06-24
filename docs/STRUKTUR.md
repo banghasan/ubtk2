@@ -19,7 +19,16 @@ utbk2/
 ├── package.json
 ├── seed.json
 ├── docs/
-│   ├── DEPLOY.md
+│   ├── DEPLOY/
+│   │   ├── README.md
+│   │   ├── 01-setup.md
+│   │   ├── 02-database.md
+│   │   ├── 03-network.md
+│   │   ├── 04-configuration.md
+│   │   ├── 05-verification.md
+│   │   ├── 06-checklist.md
+│   │   ├── 07-update.md
+│   │   └── 08-troubleshooting.md
 │   ├── FORMAT-SOAL.md
 │   ├── KONSEP.md
 │   ├── RENCANA.md

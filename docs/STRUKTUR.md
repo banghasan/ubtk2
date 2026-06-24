@@ -37,8 +37,8 @@ utbk2/
 │   │   ├── 04-eksekusi.md
 │   │   ├── 05-ai-prompt.md
 │   │   └── 06-troubleshooting.md
-│   ├── KONSEP.md
-│   ├── RENCANA.md
+│   ├── ARSITEKTUR.md
+│   ├── CHANGELOG.md
 │   ├── RENCANA-PROFESIONALISASI.md
 │   └── STRUKTUR.md
 ├── backend/

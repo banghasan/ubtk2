@@ -6,7 +6,7 @@ import path from 'node:path';
 
 export async function applyMigrations(pool: Pool) {
   const db = drizzle(pool, { schema, mode: 'default' });
-  const migrationsFolder = path.join(import.meta.dirname, '..', '..', 'drizzle');
+  const migrationsFolder = path.join(process.cwd(), 'drizzle');
 
   console.log('[migrate] Running migrations from:', migrationsFolder);
   await migrate(db, { migrationsFolder });

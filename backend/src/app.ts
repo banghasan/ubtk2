@@ -7,6 +7,7 @@ import type { Pool } from './db/connection';
 
 interface AppConfig {
   pool: Pool;
+  frontendPort: number;
 }
 
 export function createApp(config: AppConfig) {
@@ -15,7 +16,7 @@ export function createApp(config: AppConfig) {
   app.use(
     '/api/*',
     cors({
-      origin: 'http://localhost:5173',
+      origin: `http://localhost:${config.frontendPort}`,
       credentials: true,
     }),
   );

@@ -11,7 +11,7 @@ interface Env {
 }
 
 function loadEnv(): Env {
-  const envPath = path.join(import.meta.dirname, '..', '..', '..', '.env');
+  const envPath = path.join(process.cwd(), '..', '.env');
   const raw = fs.readFileSync(envPath, 'utf8');
   const env: Record<string, string> = {};
 

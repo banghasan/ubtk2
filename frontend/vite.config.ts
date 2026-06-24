@@ -1,6 +1,26 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'node:path';
+
+function readEnv(key: string): string {
+  const envPath = path.resolve(process.cwd(), '..', '.env');
+  const raw = fs.readFileSync(envPath, 'utf8');
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq === -1) continue;
+    if (trimmed.slice(0, eq).trim() === key) {
+      return trimmed.slice(eq + 1).trim();
+    }
+  }
+  return '';
+}
+
+const backendPort = readEnv('APP_PORT') || '3000';
+const frontendPort = Number(readEnv('FRONTEND_PORT')) || 5173;
 
 export default defineConfig({
   plugins: [vue()],
@@ -10,8 +30,9 @@ export default defineConfig({
     },
   },
   server: {
+    port: frontendPort,
     proxy: {
-      '/api': 'http://localhost:3000',
+      '/api': `http://localhost:${backendPort}`,
     },
   },
 });

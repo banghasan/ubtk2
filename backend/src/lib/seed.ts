@@ -45,7 +45,7 @@ const seedSchema = z.object({
 });
 
 async function seed() {
-  const seedPath = path.join(import.meta.dirname, '..', '..', '..', 'seed.json');
+  const seedPath = path.join(process.cwd(), '..', 'seed.json');
   const raw = fs.readFileSync(seedPath, 'utf8');
   const data = seedSchema.parse(JSON.parse(raw));
 

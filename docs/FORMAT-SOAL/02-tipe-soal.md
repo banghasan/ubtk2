@@ -1,0 +1,71 @@
+# Contoh Per Tipe Soal
+
+## Single Choice (Pilihan Ganda)
+
+Satu jawaban benar dari beberapa opsi.
+
+```json
+{
+  "topic_slug": "aljabar",
+  "type": "single_choice",
+  "difficulty": "easy",
+  "question_text": "Hasil dari 2x + 5 = 13, maka nilai x adalah...",
+  "explanation_text": "2x + 5 = 13 → 2x = 8 → x = 4",
+  "options": [
+    { "key": "A", "text": "3", "is_correct": false },
+    { "key": "B", "text": "4", "is_correct": true },
+    { "key": "C", "text": "5", "is_correct": false },
+    { "key": "D", "text": "6", "is_correct": false }
+  ]
+}
+```
+
+**Aturan:** tepat satu opsi `is_correct: true`.
+
+---
+
+## Multiple Response (Pilihan Ganda Kompleks)
+
+Lebih dari satu jawaban benar. Penilaian all-or-nothing.
+
+```json
+{
+  "topic_slug": "penalaran-umum",
+  "type": "multiple_response",
+  "difficulty": "hard",
+  "question_text": "Manakah pernyataan berikut yang termasuk silogisme?",
+  "explanation_text": "Silogisme memiliki premis umum dan khusus yang menghasilkan kesimpulan. Pernyataan 1 dan 3 memenuhi.",
+  "options": [
+    { "key": "A", "text": "Semua manusia akan mati. Socrates adalah manusia. Jadi Socrates akan mati.", "is_correct": true },
+    { "key": "B", "text": "Jika hujan turun, tanah basah. Tanah basah, jadi hujan turun.", "is_correct": false },
+    { "key": "C", "text": "Semua mamalia bernapas dengan paru-paru. Paus adalah mamalia. Jadi paus bernapas dengan paru-paru.", "is_correct": true },
+    { "key": "D", "text": "Sebagian besar siswa suka matematika. Andi adalah siswa. Jadi Andi suka matematika.", "is_correct": false }
+  ]
+}
+```
+
+**Aturan:**
+- Minimal 2 opsi `is_correct: true`
+- User harus centang **semua** yang benar — kurang atau lebih dianggap salah
+
+---
+
+## True/False (Benar-Salah)
+
+Pernyataan yang dinilai benar atau salah.
+
+```json
+{
+  "topic_slug": "geometri",
+  "type": "true_false",
+  "difficulty": "medium",
+  "question_text": "Sebuah lingkaran dengan jari-jari 7 cm memiliki luas 154 cm persegi.",
+  "explanation_text": "Luas = πr² = 22/7 × 49 = 22 × 7 = 154 cm². Pernyataan BENAR.",
+  "options": [
+    { "key": "true", "text": "Benar", "is_correct": true },
+    { "key": "false", "text": "Salah", "is_correct": false }
+  ]
+}
+```
+
+**Aturan:** tepat 2 opsi: `key: "true"` dan `key: "false"`. Salah satu `is_correct: true`.

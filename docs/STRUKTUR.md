@@ -29,7 +29,14 @@ utbk2/
 │   │   ├── 06-checklist.md
 │   │   ├── 07-update.md
 │   │   └── 08-troubleshooting.md
-│   ├── FORMAT-SOAL.md
+│   ├── FORMAT-SOAL/
+│   │   ├── README.md
+│   │   ├── 01-struktur-data.md
+│   │   ├── 02-tipe-soal.md
+│   │   ├── 03-operasi-data.md
+│   │   ├── 04-eksekusi.md
+│   │   ├── 05-ai-prompt.md
+│   │   └── 06-troubleshooting.md
 │   ├── KONSEP.md
 │   ├── RENCANA.md
 │   ├── RENCANA-PROFESIONALISASI.md

@@ -46,7 +46,18 @@ CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED BY 'PASSWORD';
 FLUSH PRIVILEGES;
 ```
 
-## Alternatif: `network_mode: host`
+## Network `hasanNet` tidak ditemukan saat `docker compose up`
+
+```bash
+docker network create hasanNet
+docker compose up -d
+```
+
+Cek apakah container sudah join:
+
+```bash
+docker inspect app | grep hasanNet
+```
 
 Jika bridge Docker bermasalah, pakai host networking:
 
@@ -97,3 +108,18 @@ bun run install:all:frozen             # backend + frontend
 ```
 
 Jika gagal, ada dependency baru. Jalankan `bun install` biasa di dev, commit semua `bun.lock`, deploy ulang.
+
+## Network `hasanNet` tidak ditemukan
+
+Jika `docker compose up` error soal network:
+
+```bash
+docker network create hasanNet
+docker compose up -d
+```
+
+Cek apakah container sudah join:
+
+```bash
+docker inspect app 2>/dev/null | grep hasanNet
+```

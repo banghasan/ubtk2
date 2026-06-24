@@ -2,10 +2,26 @@
 
 ## Buat Docker Network Bersama
 
-Jika NPM berjalan sebagai container, buat satu network:
+Jika app perlu join ke network yang sudah ada, buat network dulu sebelum `docker compose up`:
 
 ```bash
-docker network create npm_network
+docker network create hasanNet
+```
+
+Jika network sudah ada, Docker akan memberi tahu dan Anda bisa lanjut.
+
+Cek apakah network sudah ada:
+
+```bash
+docker network ls | grep hasanNet
+```
+
+Contoh di `docker-compose.yml`:
+
+```yaml
+networks:
+  hasanNet:
+    external: true
 ```
 
 ## Topologi NPM

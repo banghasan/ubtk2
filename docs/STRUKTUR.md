@@ -16,6 +16,7 @@ utbk2/
 ├── docs/
 │   ├── KONSEP.md                 # Dokumen konsep aplikasi
 │   ├── RENCANA.md                # Rencana eksekusi step-by-step
+│   ├── FORMAT-SOAL.md            # Panduan format memasukkan soal
 │   └── STRUKTUR.md               # File ini
 │
 ├── backend/

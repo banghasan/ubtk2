@@ -4,7 +4,7 @@
       <a href="#" class="quiz-back" @click.prevent="tryExit">&larr; Ganti Topik</a>
       <span v-if="topicLabel" class="quiz-topic">{{ topicLabel }}</span>
       <span v-if="state === 'answering' || state === 'reviewing'" class="quiz-counter">
-        {{ answeredIds.size + 1 }} / {{ questionCount }}
+        {{ currentQuestionNumber }} / {{ questionCount }}
       </span>
     </div>
 
@@ -143,6 +143,10 @@ const sessionResults = ref<SessionResult[]>([]);
 const showExitModal = ref(false);
 let pendingExitRoute: string | null = null;
 
+const currentQuestionNumber = computed(() => {
+  if (state.value === 'reviewing') return answeredIds.value.size;
+  return answeredIds.value.size + 1;
+});
 const correctCount = computed(() => sessionResults.value.filter((r) => r.correct).length);
 const incorrectCount = computed(() => sessionResults.value.filter((r) => !r.correct).length);
 const totalTime = computed(() => {

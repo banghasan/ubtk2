@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { drizzle } from 'drizzle-orm/mysql2';
-import { eq } from 'drizzle-orm';
+import { eq, count } from 'drizzle-orm';
 import { topics } from '../db/schema/topics';
+import { questions } from '../db/schema/questions';
 import * as schema from '../db/schema/index';
 import type { Pool } from '../db/connection';
 import { z } from 'zod';
@@ -23,9 +24,18 @@ export function topicsRoutes(pool: Pool) {
     }
 
     const rows = await db
-      .select()
+      .select({
+        id: topics.id,
+        subject_id: topics.subject_id,
+        slug: topics.slug,
+        label: topics.label,
+        display_order: topics.display_order,
+        question_count: count(questions.id),
+      })
       .from(topics)
+      .leftJoin(questions, eq(questions.topic_id, topics.id))
       .where(eq(topics.subject_id, parsed.data.subject_id))
+      .groupBy(topics.id)
       .orderBy(topics.display_order);
 
     return c.json({ topics: rows });

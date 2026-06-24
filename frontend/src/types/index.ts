@@ -11,6 +11,7 @@ export interface Topic {
   slug: string;
   label: string;
   display_order: number;
+  question_count: number;
 }
 
 export interface QuestionOption {

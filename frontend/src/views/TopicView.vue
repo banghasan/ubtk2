@@ -16,7 +16,7 @@
         :to="`/quiz/${topic.id}`"
         class="topic-card"
       >
-        <span class="topic-label">{{ topic.label }}</span>
+        <span class="topic-label">{{ topic.label }} <span class="topic-count">({{ topic.question_count }})</span></span>
         <span class="topic-arrow">&rarr;</span>
       </router-link>
     </div>
@@ -113,6 +113,12 @@ onMounted(async () => {
 .topic-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
+}
+
+.topic-count {
+  font-size: 0.85rem;
+  color: #8899aa;
+  font-weight: 400;
 }
 
 .topic-arrow {

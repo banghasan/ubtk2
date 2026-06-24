@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { drizzle } from 'drizzle-orm/mysql2';
-import { eq, sql, count } from 'drizzle-orm';
+import { eq, sql, count, and, notInArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { questions } from '../db/schema/questions';
 import { questionOptions } from '../db/schema/question-options';
@@ -11,6 +11,7 @@ import type { QuestionType } from '../lib/scoring';
 
 const randomQuerySchema = z.object({
   topic_id: z.coerce.number().int().positive(),
+  exclude: z.string().optional(),
 });
 
 const checkBodySchema = z.object({
@@ -43,10 +44,19 @@ export function questionsRoutes(pool: Pool) {
       return c.json({ error: 'invalid_query', message: 'topic_id harus berupa angka positif.' }, 400);
     }
 
+    const excludeIds = parsed.data.exclude
+      ? parsed.data.exclude.split(',').map(Number).filter((n) => Number.isFinite(n) && n > 0)
+      : [];
+
+    const conditions = [eq(questions.topic_id, parsed.data.topic_id)];
+    if (excludeIds.length > 0) {
+      conditions.push(notInArray(questions.id, excludeIds));
+    }
+
     const [row] = await db
       .select()
       .from(questions)
-      .where(eq(questions.topic_id, parsed.data.topic_id))
+      .where(and(...conditions))
       .orderBy(sql`RAND()`)
       .limit(1);
 

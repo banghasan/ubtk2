@@ -24,8 +24,12 @@ export async function fetchTopics(subjectId: number): Promise<Topic[]> {
   return data.topics;
 }
 
-export async function fetchRandomQuestion(topicId: number): Promise<Question | null> {
-  const data = await request<{ question: Question | null }>(`/questions/random?topic_id=${topicId}`);
+export async function fetchRandomQuestion(topicId: number, excludeIds?: number[]): Promise<Question | null> {
+  let url = `/questions/random?topic_id=${topicId}`;
+  if (excludeIds && excludeIds.length > 0) {
+    url += `&exclude=${excludeIds.join(',')}`;
+  }
+  const data = await request<{ question: Question | null }>(url);
   return data.question;
 }
 

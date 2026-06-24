@@ -1,0 +1,27 @@
+{
+  "name": "utbk-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "seed": "bun src/lib/seed.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "bun src/db/migrate.ts"
+  },
+  "dependencies": {
+    "hono": "^4.8.0",
+    "mysql2": "^3.14.5",
+    "drizzle-orm": "^0.43.0",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.20",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4",
+    "drizzle-kit": "^0.30.6"
+  }
+}

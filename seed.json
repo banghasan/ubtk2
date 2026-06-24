@@ -1,0 +1,170 @@
+{
+  "subjects": [
+    { "slug": "tps", "label": "TPS", "display_order": 1 },
+    { "slug": "literasi-bahasa-indonesia", "label": "Literasi Bahasa Indonesia", "display_order": 2 },
+    { "slug": "literasi-bahasa-inggris", "label": "Literasi Bahasa Inggris", "display_order": 3 },
+    { "slug": "penalaran-matematika", "label": "Penalaran Matematika", "display_order": 4 }
+  ],
+  "topics": [
+    { "slug": "penalaran-umum", "subject_slug": "tps", "label": "Penalaran Umum", "display_order": 1 },
+    { "slug": "pengetahuan-kuantitatif", "subject_slug": "tps", "label": "Pengetahuan Kuantitatif", "display_order": 2 },
+    { "slug": "pemahaman-dan-pengetahuan-bacaan", "subject_slug": "literasi-bahasa-indonesia", "label": "Pemahaman dan Pengetahuan Bacaan", "display_order": 1 },
+    { "slug": "literasi-bahasa-inggris", "subject_slug": "literasi-bahasa-inggris", "label": "Literasi Bahasa Inggris", "display_order": 1 },
+    { "slug": "aljabar", "subject_slug": "penalaran-matematika", "label": "Aljabar", "display_order": 1 },
+    { "slug": "geometri", "subject_slug": "penalaran-matematika", "label": "Geometri", "display_order": 2 }
+  ],
+  "questions": [
+    {
+      "topic_slug": "penalaran-umum",
+      "type": "single_choice",
+      "difficulty": "medium",
+      "question_text": "Semua mahasiswa adalah lulusan SMA. Sebagian mahasiswa adalah pemilik bisnis online. Simpulan yang paling tepat adalah...",
+      "explanation_text": "Premis 1: Semua mahasiswa = lulusan SMA. Premis 2: Sebagian mahasiswa = pemilik bisnis online. Maka dapat disimpulkan bahwa sebagian lulusan SMA adalah pemilik bisnis online.",
+      "options": [
+        { "key": "A", "text": "Semua pemilik bisnis online adalah mahasiswa", "is_correct": false },
+        { "key": "B", "text": "Sebagian lulusan SMA adalah pemilik bisnis online", "is_correct": true },
+        { "key": "C", "text": "Semua lulusan SMA adalah pemilik bisnis online", "is_correct": false },
+        { "key": "D", "text": "Tidak ada lulusan SMA yang menjadi pemilik bisnis online", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "penalaran-umum",
+      "type": "single_choice",
+      "difficulty": "easy",
+      "question_text": "Jika 2x + 5 = 13, maka nilai x adalah...",
+      "explanation_text": "2x + 5 = 13 -> 2x = 8 -> x = 4",
+      "options": [
+        { "key": "A", "text": "3", "is_correct": false },
+        { "key": "B", "text": "4", "is_correct": true },
+        { "key": "C", "text": "5", "is_correct": false },
+        { "key": "D", "text": "6", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "penalaran-umum",
+      "type": "multiple_response",
+      "difficulty": "hard",
+      "question_text": "Manakah pernyataan berikut yang termasuk silogisme?",
+      "explanation_text": "Silogisme adalah bentuk penalaran deduktif yang terdiri dari premis umum dan premis khusus yang menghasilkan kesimpulan. Pernyataan 1 dan 3 memenuhi struktur silogisme.",
+      "options": [
+        { "key": "A", "text": "Semua manusia akan mati. Socrates adalah manusia. Jadi Socrates akan mati.", "is_correct": true },
+        { "key": "B", "text": "Jika hujan turun, tanah basah. Tanah basah, jadi hujan turun.", "is_correct": false },
+        { "key": "C", "text": "Semua mamalia bernapas dengan paru-paru. Paus adalah mamalia. Jadi paus bernapas dengan paru-paru.", "is_correct": true },
+        { "key": "D", "text": "Sebagian besar siswa suka matematika. Andi adalah siswa. Jadi Andi suka matematika.", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "pengetahuan-kuantitatif",
+      "type": "single_choice",
+      "difficulty": "easy",
+      "question_text": "Hasil dari 25% x 200 adalah...",
+      "explanation_text": "25% dari 200 = 25/100 x 200 = 50",
+      "options": [
+        { "key": "A", "text": "25", "is_correct": false },
+        { "key": "B", "text": "50", "is_correct": true },
+        { "key": "C", "text": "75", "is_correct": false },
+        { "key": "D", "text": "100", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "pengetahuan-kuantitatif",
+      "type": "single_choice",
+      "difficulty": "medium",
+      "question_text": "Sebuah persegi panjang memiliki panjang 12 cm dan lebar 8 cm. Luas persegi panjang tersebut adalah...",
+      "explanation_text": "Luas persegi panjang = panjang x lebar = 12 x 8 = 96 cm persegi.",
+      "options": [
+        { "key": "A", "text": "96 cm persegi", "is_correct": true },
+        { "key": "B", "text": "40 cm persegi", "is_correct": false },
+        { "key": "C", "text": "20 cm persegi", "is_correct": false },
+        { "key": "D", "text": "48 cm persegi", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "pemahaman-dan-pengetahuan-bacaan",
+      "type": "single_choice",
+      "difficulty": "medium",
+      "question_text": "Bacaan: \"Perubahan iklim telah menjadi isu global yang mendesak. Suhu rata-rata bumi meningkat 1,1 derajat Celcius sejak era pra-industri. Dampaknya meliputi naiknya permukaan air laut, cuaca ekstrem, dan terganggunya ekosistem. Para ilmuwan sepakat bahwa aktivitas manusia, terutama pembakaran bahan bakar fosil, menjadi penyebab utama.\"\n\nIde pokok bacaan tersebut adalah...",
+      "explanation_text": "Ide pokok adalah gagasan utama yang menjadi dasar pengembangan paragraf. Paragraf ini membahas perubahan iklim sebagai isu global yang mendesak, yang disebutkan di awal paragraf.",
+      "options": [
+        { "key": "A", "text": "Dampak perubahan iklim terhadap ekosistem", "is_correct": false },
+        { "key": "B", "text": "Perubahan iklim sebagai isu global yang mendesak", "is_correct": true },
+        { "key": "C", "text": "Aktivitas manusia penyebab perubahan iklim", "is_correct": false },
+        { "key": "D", "text": "Kenaikan suhu bumi sejak era pra-industri", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "literasi-bahasa-inggris",
+      "type": "single_choice",
+      "difficulty": "medium",
+      "question_text": "Read the following text:\n\"The Amazon rainforest is often called the 'lungs of the Earth' because it produces about 20% of the world's oxygen. It spans across nine countries and is home to an incredible diversity of plant and animal species. However, deforestation threatens this vital ecosystem, with large areas being cleared for agriculture and mining.\"\n\nWhy is the Amazon rainforest called the 'lungs of the Earth'?",
+      "explanation_text": "The text states it produces about 20% of the world's oxygen, which is why it's called the lungs of the Earth.",
+      "options": [
+        { "key": "A", "text": "It spans across nine countries", "is_correct": false },
+        { "key": "B", "text": "It produces about 20% of the world's oxygen", "is_correct": true },
+        { "key": "C", "text": "It has diverse plant and animal species", "is_correct": false },
+        { "key": "D", "text": "It is threatened by deforestation", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "aljabar",
+      "type": "single_choice",
+      "difficulty": "hard",
+      "question_text": "Diketahui fungsi f(x) = 2x^2 - 3x + 1. Nilai f(-1) adalah...",
+      "explanation_text": "f(-1) = 2(-1)^2 - 3(-1) + 1 = 2(1) + 3 + 1 = 2 + 3 + 1 = 6",
+      "options": [
+        { "key": "A", "text": "4", "is_correct": false },
+        { "key": "B", "text": "5", "is_correct": false },
+        { "key": "C", "text": "6", "is_correct": true },
+        { "key": "D", "text": "7", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "aljabar",
+      "type": "multiple_response",
+      "difficulty": "hard",
+      "question_text": "Manakah di antara berikut yang merupakan faktor dari x^2 - 5x + 6?",
+      "explanation_text": "x^2 - 5x + 6 = (x - 2)(x - 3). Jadi faktor-faktornya adalah (x - 2) dan (x - 3).",
+      "options": [
+        { "key": "A", "text": "(x - 2)", "is_correct": true },
+        { "key": "B", "text": "(x + 2)", "is_correct": false },
+        { "key": "C", "text": "(x - 3)", "is_correct": true },
+        { "key": "D", "text": "(x + 3)", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "geometri",
+      "type": "single_choice",
+      "difficulty": "easy",
+      "question_text": "Sebuah segitiga siku-siku memiliki sisi tegak 6 cm dan 8 cm. Panjang sisi miringnya adalah...",
+      "explanation_text": "Menggunakan teorema Pythagoras: c^2 = a^2 + b^2 = 36 + 64 = 100. Jadi c = akar(100) = 10 cm.",
+      "options": [
+        { "key": "A", "text": "10 cm", "is_correct": true },
+        { "key": "B", "text": "12 cm", "is_correct": false },
+        { "key": "C", "text": "14 cm", "is_correct": false },
+        { "key": "D", "text": "15 cm", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "geometri",
+      "type": "true_false",
+      "difficulty": "medium",
+      "question_text": "Sebuah lingkaran dengan jari-jari 7 cm memiliki luas 154 cm persegi.",
+      "explanation_text": "Luas lingkaran = pi x r^2 = 22/7 x 49 = 22 x 7 = 154 cm persegi. Pernyataan BENAR.",
+      "options": [
+        { "key": "true", "text": "Benar", "is_correct": true },
+        { "key": "false", "text": "Salah", "is_correct": false }
+      ]
+    },
+    {
+      "topic_slug": "penalaran-umum",
+      "type": "true_false",
+      "difficulty": "easy",
+      "question_text": "Semua persegi adalah persegi panjang.",
+      "explanation_text": "Persegi memiliki semua sifat persegi panjang (sisi berhadapan sejajar, semua sudut 90 derajat), ditambah semua sisi sama panjang. Jadi persegi adalah kasus khusus persegi panjang. Pernyataan BENAR.",
+      "options": [
+        { "key": "true", "text": "Benar", "is_correct": true },
+        { "key": "false", "text": "Salah", "is_correct": false }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "utbk-belajar",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --cwd backend dev & bun run --cwd frontend dev",
+    "install:all": "bun install --cwd backend && bun install --cwd frontend",
+    "test": "bun run --cwd backend test && bun run --cwd frontend test",
+    "typecheck": "bun run --cwd backend typecheck && bun run --cwd frontend typecheck",
+    "seed": "bun run --cwd backend seed",
+    "db:migrate": "bun run --cwd backend db:migrate"
+  }
+}

@@ -44,6 +44,7 @@ watch(
       emit('time', elapsed.value);
     }
   },
+  { immediate: true },
 );
 
 onBeforeUnmount(() => {

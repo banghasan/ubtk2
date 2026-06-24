@@ -49,10 +49,6 @@
         </button>
       </div>
 
-      <div class="quiz-timer-display" v-if="state === 'reviewing' && finalTime > 0">
-        <TimerBar :running="false" />
-      </div>
-
       <ExplanationPanel
         v-if="state === 'reviewing' && result"
         :correct="result.correct"

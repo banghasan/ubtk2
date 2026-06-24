@@ -78,9 +78,9 @@
         :correct_keys="result.correct_keys"
         :explanation="result.explanation"
         :elapsed_seconds="finalTime"
-        :is_last="answeredIds.size >= questionCount"
+        :is_last="isLastQuestion"
         @next="nextQuestion"
-        @finish="state = 'resume'"
+        @finish="finishSession"
       />
     </div>
 
@@ -103,20 +103,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
-import {
-  fetchRandomQuestion,
-  checkAnswer as apiCheckAnswer,
-  fetchTopics,
-  fetchQuestionCount,
-  fetchSubjects,
-} from '@/api/client';
-import type { Question, CheckResult } from '@/types';
 import QuestionCard from '@/components/QuestionCard.vue';
 import TimerBar from '@/components/TimerBar.vue';
 import OptionList from '@/components/OptionList.vue';
 import ExplanationPanel from '@/components/ExplanationPanel.vue';
+import { useQuizSession } from '@/composables/useQuizSession';
 
 const route = useRoute();
 const router = useRouter();
@@ -125,172 +118,41 @@ function getTopicId(): number {
   return Number(route.params.id);
 }
 
-type QuizState = 'loading' | 'ready' | 'answering' | 'reviewing' | 'resume' | 'error';
-
-interface SessionResult {
-  correct: boolean;
-  elapsed: number;
-}
-
-const state = ref<QuizState>('loading');
-const question = ref<Question | null>(null);
-const result = ref<CheckResult | null>(null);
-const selectedKeys = ref<string[]>([]);
-const timerRunning = ref(false);
-const finalTime = ref(0);
-const errorMessage = ref('');
-const subjectId = ref(0);
-const topicLabel = ref('');
-const questionCount = ref(0);
-const autoStart = ref(false);
-const answeredIds = ref<Set<number>>(new Set());
-const sessionResults = ref<SessionResult[]>([]);
-const showExitModal = ref(false);
-
-const currentQuestionNumber = computed(() => {
-  if (state.value === 'reviewing') return answeredIds.value.size;
-  return answeredIds.value.size + 1;
+const {
+  accuracy,
+  cancelExit: dismissExitModal,
+  confirmExitState,
+  correctCount,
+  currentQuestionNumber,
+  errorMessage,
+  finalTime,
+  finishSession,
+  hasActiveSession,
+  incorrectCount,
+  initializeSession,
+  isLastQuestion,
+  nextQuestion,
+  onSelectKeys,
+  onTime,
+  question,
+  questionCount,
+  resetSession,
+  result,
+  retryCurrentState,
+  selectedKeys,
+  showExitModal,
+  startQuiz,
+  state,
+  subjectId,
+  submitAnswer,
+  timerRunning,
+  topicLabel,
+  totalTime,
+} = useQuizSession({
+  getTopicId,
+  getQuerySubjectId: () => Number(route.query.subject_id),
+  getQueryTopicLabel: () => typeof route.query.topic_label === 'string' ? route.query.topic_label : '',
 });
-const correctCount = computed(() => sessionResults.value.filter((r) => r.correct).length);
-const incorrectCount = computed(() => sessionResults.value.filter((r) => !r.correct).length);
-const totalTime = computed(() => {
-  const total = sessionResults.value.reduce((sum, r) => sum + r.elapsed, 0);
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-});
-const accuracy = computed(() => {
-  if (sessionResults.value.length === 0) return 0;
-  return Math.round((correctCount.value / sessionResults.value.length) * 100);
-});
-
-async function loadQuestion() {
-  state.value = 'loading';
-  result.value = null;
-  selectedKeys.value = [];
-  finalTime.value = 0;
-
-  try {
-    const excludeArr = Array.from(answeredIds.value);
-    const q = await fetchRandomQuestion(getTopicId(), excludeArr);
-
-    if (!q) {
-      state.value = 'resume';
-      return;
-    }
-
-    question.value = q;
-    if (autoStart.value) {
-      autoStart.value = false;
-      timerRunning.value = true;
-      state.value = 'answering';
-    } else {
-      state.value = 'ready';
-    }
-  } catch (e) {
-    errorMessage.value = e instanceof Error ? e.message : 'Gagal memuat soal.';
-    state.value = 'error';
-  }
-}
-
-function startQuiz() {
-  if (questionCount.value === 0 || !question.value) {
-    loadQuestion();
-    return;
-  }
-
-  timerRunning.value = true;
-  state.value = 'answering';
-}
-
-function nextQuestion() {
-  autoStart.value = true;
-  loadQuestion();
-}
-
-function onSelectKeys(keys: string[]) {
-  selectedKeys.value = keys;
-}
-
-function onTime(seconds: number) {
-  if (!timerRunning.value) {
-    finalTime.value = seconds;
-  }
-}
-
-async function submitAnswer() {
-  if (!question.value || selectedKeys.value.length === 0) return;
-
-  timerRunning.value = false;
-
-  try {
-    const res = await apiCheckAnswer(question.value.id, selectedKeys.value);
-    result.value = res;
-    answeredIds.value.add(question.value.id);
-    sessionResults.value.push({ correct: res.correct, elapsed: finalTime.value });
-    state.value = 'reviewing';
-  } catch (e) {
-    errorMessage.value = e instanceof Error ? e.message : 'Gagal memeriksa jawaban.';
-    state.value = 'error';
-  }
-}
-
-async function loadTopicInfo() {
-  const querySubjectId = Number(route.query.subject_id);
-  const queryTopicLabel = typeof route.query.topic_label === 'string' ? route.query.topic_label : '';
-
-  if (Number.isInteger(querySubjectId) && querySubjectId > 0) {
-    subjectId.value = querySubjectId;
-  }
-
-  if (queryTopicLabel) {
-    topicLabel.value = queryTopicLabel;
-  }
-
-  if (subjectId.value > 0 && topicLabel.value) {
-    return;
-  }
-
-  try {
-    const subjects = await fetchSubjects();
-    const topicLists = await Promise.all(subjects.map((subject) => fetchTopics(subject.id)));
-    const found = topicLists.flat().find((topic) => topic.id === getTopicId());
-
-    if (found) {
-      subjectId.value = found.subject_id;
-      topicLabel.value = found.label;
-    }
-  } catch {
-    subjectId.value = 1;
-  }
-}
-
-async function loadQuestionCount() {
-  try {
-    questionCount.value = await fetchQuestionCount(getTopicId());
-  } catch {
-    questionCount.value = 0;
-  }
-}
-
-async function retryCurrentState() {
-  await Promise.all([
-    loadTopicInfo(),
-    loadQuestionCount(),
-  ]);
-  await loadQuestion();
-}
-
-function resetSession() {
-  answeredIds.value = new Set();
-  sessionResults.value = [];
-  autoStart.value = false;
-}
-
-function hasActiveSession(): boolean {
-  if (state.value === 'resume' || state.value === 'ready') return false;
-  return state.value === 'answering' || state.value === 'reviewing' || answeredIds.value.size > 0;
-}
 
 function tryExit() {
   if (hasActiveSession()) {
@@ -301,15 +163,11 @@ function tryExit() {
 }
 
 function cancelExit() {
-  showExitModal.value = false;
+  dismissExitModal();
 }
 
 function confirmExit() {
-  showExitModal.value = false;
-  resetSession();
-  state.value = 'ready';
-  question.value = null;
-  timerRunning.value = false;
+  confirmExitState();
   router.push(`/topics/${subjectId.value}`);
 }
 
@@ -327,16 +185,12 @@ watch(
   (newId) => {
     if (!newId) return;
     resetSession();
-    loadTopicInfo();
-    loadQuestionCount();
-    loadQuestion();
+    initializeSession();
   },
 );
 
 onMounted(() => {
-  loadTopicInfo();
-  loadQuestionCount();
-  loadQuestion();
+  initializeSession();
 });
 </script>
 

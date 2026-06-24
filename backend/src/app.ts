@@ -8,9 +8,15 @@ import { questionsRoutes } from './routes/questions';
 import { requireAuth } from './middleware/require-auth';
 import type { Pool } from './db/connection';
 
+declare module 'hono' {
+  interface ContextVariableMap {
+    requestId: string;
+  }
+}
+
 interface AppConfig {
   pool: Pool;
-  frontendPort: number;
+  corsOrigin: string;
   appPassword: string;
 }
 
@@ -19,10 +25,15 @@ export function createApp(config: AppConfig) {
 
   app.get('/health', (c) => c.json({ status: 'ok' }));
 
+  app.use('/api/*', async (c, next) => {
+    c.set('requestId', crypto.randomUUID());
+    await next();
+  });
+
   app.use(
     '/api/*',
     cors({
-      origin: `http://localhost:${config.frontendPort}`,
+      origin: config.corsOrigin,
       credentials: true,
     }),
   );
@@ -36,8 +47,16 @@ export function createApp(config: AppConfig) {
   }
 
   app.onError((err, c) => {
-    console.error('[error]', err);
-    return c.json({ error: 'internal_server_error', message: 'Terjadi kesalahan server.' }, 500);
+    const requestId = c.get('requestId') ?? 'unknown';
+    console.error(`[error] [${requestId}]`, err);
+    return c.json(
+      {
+        error: 'internal_server_error',
+        message: 'Terjadi kesalahan server.',
+        request_id: requestId,
+      },
+      500,
+    );
   });
 
   app.route('/api/subjects', subjectsRoutes(config.pool));

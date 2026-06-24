@@ -27,7 +27,7 @@ describe('createApp', () => {
   it('returns health status', async () => {
     const app = createApp({
       pool: {} as never,
-      frontendPort: 5173,
+      corsOrigin: 'http://localhost:5173',
       appPassword: '',
     });
 

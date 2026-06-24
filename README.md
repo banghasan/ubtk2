@@ -68,11 +68,14 @@ DB_NAME=utbk_belajar
 APP_PORT=3000
 FRONTEND_PORT=5173
 APP_PASSWORD=secretttt
+CORS_ORIGIN=
 ```
 
 Catatan:
 - Jika `APP_PASSWORD` kosong, auth nonaktif.
 - Jika `APP_PASSWORD` diisi, user harus login lewat `/auth`.
+- `CORS_ORIGIN` biarkan kosong untuk development (auto `http://localhost:FRONTEND_PORT`).
+  Isi untuk production, misal `https://domain-anda.com`.
 
 ---
 

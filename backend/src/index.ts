@@ -11,7 +11,7 @@ const config = loadConfig();
 
 const app = createApp({
   pool,
-  frontendPort: config.FRONTEND_PORT,
+  corsOrigin: config.CORS_ORIGIN,
   appPassword: config.APP_PASSWORD,
 });
 
